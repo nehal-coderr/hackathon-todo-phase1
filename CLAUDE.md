@@ -208,3 +208,10 @@ Wait for consent; never auto-create ADRs. Group related decisions (stacks, authe
 
 ## Code Standards
 See `.specify/memory/constitution.md` for code quality, testing, performance, security, and architecture principles.
+
+## Active Technologies
+- Python 3.10+ (stdlib only) + None (stdlib: argparse, json, pathlib, datetime) (001-cli-todo-app)
+- JSON file at `~/.todo/tasks.json` (001-cli-todo-app)
+
+## Recent Changes
+- 001-cli-todo-app: Added Python 3.10+ (stdlib only) + None (stdlib: argparse, json, pathlib, datetime)

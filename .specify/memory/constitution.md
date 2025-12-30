@@ -1,55 +1,113 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report
+==================
+Version change: 1.0.0 → 2.0.0 (MAJOR - Phase I scope update)
+Changed sections:
+  - II. In-Memory Only → II. JSON File Storage (persistence now allowed)
+  - III. Console Interface → III. Subcommand CLI Interface (menu loop → subcommands)
+  - IV. Minimal Dependencies (updated Python version to 3.10+)
+  - Technology Constraints (updated storage and interface)
+  - Explicit Non-Goals (removed file persistence and argparse from non-goals)
+Rationale: Clarification session determined JSON persistence and subcommand CLI are required for Phase I
+Templates requiring updates:
+  - plan-template.md: ✅ No changes required
+  - spec-template.md: ✅ No changes required
+  - tasks-template.md: ✅ No changes required
+Follow-up TODOs: None
+-->
+
+# Hackathon II Phase I - Console Todo App Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Simplicity First
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+All features MUST be implemented with the minimum viable code. No abstractions, patterns, or indirection unless absolutely required for correctness.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+- Single-file implementation preferred when feasible
+- No design patterns (factory, repository, etc.) unless solving a concrete problem
+- Direct list operations over service layers
+- Inline validation over separate validator classes
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+**Rationale**: Hackathon constraints demand speed; unnecessary abstraction slows development and obscures logic.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### II. JSON File Storage
 
-### [PRINCIPLE_6_NAME]
+All data MUST be persisted to a local JSON file for durability across sessions.
 
+- Data structure: `[{"id": int, "title": str, "description": str, "due_date": str|null, "status": str, "created_at": str}]`
+- ID generation MUST be sequential (max existing ID + 1, or 1 if empty)
+- Storage file: `~/.todo/tasks.json` (user's home directory)
+- File MUST be created on first write if it doesn't exist
+- File MUST be human-readable (indented JSON)
+- Support Unicode text including Urdu in title and description fields
 
-[PRINCIPLE__DESCRIPTION]
+**Rationale**: Clarification session determined persistence is required for Phase I; JSON provides human-readable storage with stdlib support.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### III. Subcommand CLI Interface
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+All user interaction MUST occur via subcommand-style CLI (e.g., `todo add`, `todo list`).
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+- Subcommands: `add`, `list`, `update`, `delete`, `complete`
+- Use Python's `argparse` module from stdlib for argument parsing
+- Output MUST include status indicators for task completion state
+- Errors MUST be displayed to stderr with actionable guidance
+- Each command executes once and exits (no interactive loop)
+- CLI interface messages in English; task content supports Unicode (including Urdu)
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+**Rationale**: Subcommand CLI is the modern standard (git, docker); clarification session confirmed this approach.
+
+### IV. Minimal Dependencies
+
+The project MUST use only Python standard library. No external packages.
+
+- Python 3.10+ as the minimum runtime (3.10, 3.11, 3.12, or 3.13 acceptable)
+- UV as the project/package manager (for running, not for dependencies)
+- No pytest, click, rich, or other third-party packages
+- Testing via manual console interaction or built-in unittest if needed
+
+**Rationale**: External dependencies add complexity and potential compatibility issues; standard library suffices for CRUD operations.
+
+## Technology Constraints
+
+**Language/Version**: Python 3.10+
+**Package Manager**: UV (for project management only)
+**External Dependencies**: None (stdlib only)
+**Storage**: JSON file (`~/.todo/tasks.json`)
+**Interface**: Subcommand CLI (argparse)
+**Testing**: Manual or unittest (stdlib)
+**Unicode**: Full support including Urdu in task content
+
+## Explicit Non-Goals
+
+The following are explicitly OUT OF SCOPE for Phase I:
+
+- Database integration (SQLite, PostgreSQL, etc.)
+- Web interface (Flask, FastAPI, Django)
+- Authentication or user management
+- AI/ML features
+- Multi-user support
+- Task categories, tags, or priorities
+- Reminders or notifications
+- Search or filtering beyond basic list view
+- Cloud sync or network features
+
+**Rationale**: Scope creep is the enemy of hackathon success. Phase I delivers basic CRUD with local JSON persistence.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+1. **Constitution Authority**: This constitution supersedes all other project documentation for Phase I scope decisions.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+2. **Amendments**: Any change to this constitution MUST be documented with:
+   - Rationale for the change
+   - Impact assessment on existing code
+   - Version increment (MAJOR for scope changes, MINOR for additions, PATCH for clarifications)
+
+3. **Compliance**: All code contributions MUST:
+   - Satisfy the four core principles
+   - Not introduce out-of-scope features
+   - Use only permitted technologies
+
+4. **Violations**: If a principle must be violated, document the justification in code comments and flag for review.
+
+**Version**: 2.0.0 | **Ratified**: 2025-12-30 | **Last Amended**: 2025-12-31
